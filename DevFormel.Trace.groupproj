@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{D5ABC117-BFB3-470F-B9B8-9E099786E9DA}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Packages\DevFormel.Trace.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Packages\DevFormel.Trace.Design.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\VCL\DFTraceDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\FMX\DFTraceDemoFMX.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Tests\DevFormel.Trace.Tests.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DevFormel_Trace">
+        <MSBuild Projects="Packages\DevFormel.Trace.dproj"/>
+    </Target>
+    <Target Name="DevFormel_Trace:Clean">
+        <MSBuild Projects="Packages\DevFormel.Trace.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DevFormel_Trace:Make">
+        <MSBuild Projects="Packages\DevFormel.Trace.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DevFormel_Trace_Design">
+        <MSBuild Projects="Packages\DevFormel.Trace.Design.dproj"/>
+    </Target>
+    <Target Name="DevFormel_Trace_Design:Clean">
+        <MSBuild Projects="Packages\DevFormel.Trace.Design.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DevFormel_Trace_Design:Make">
+        <MSBuild Projects="Packages\DevFormel.Trace.Design.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DFTraceDemo">
+        <MSBuild Projects="Demos\VCL\DFTraceDemo.dproj"/>
+    </Target>
+    <Target Name="DFTraceDemo:Clean">
+        <MSBuild Projects="Demos\VCL\DFTraceDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DFTraceDemo:Make">
+        <MSBuild Projects="Demos\VCL\DFTraceDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DFTraceDemoFMX">
+        <MSBuild Projects="Demos\FMX\DFTraceDemoFMX.dproj"/>
+    </Target>
+    <Target Name="DFTraceDemoFMX:Clean">
+        <MSBuild Projects="Demos\FMX\DFTraceDemoFMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DFTraceDemoFMX:Make">
+        <MSBuild Projects="Demos\FMX\DFTraceDemoFMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DevFormel_Trace_Tests">
+        <MSBuild Projects="Tests\DevFormel.Trace.Tests.dproj"/>
+    </Target>
+    <Target Name="DevFormel_Trace_Tests:Clean">
+        <MSBuild Projects="Tests\DevFormel.Trace.Tests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DevFormel_Trace_Tests:Make">
+        <MSBuild Projects="Tests\DevFormel.Trace.Tests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DevFormel_Trace;DevFormel_Trace_Design;DFTraceDemo;DFTraceDemoFMX;DevFormel_Trace_Tests"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DevFormel_Trace:Clean;DevFormel_Trace_Design:Clean;DFTraceDemo:Clean;DFTraceDemoFMX:Clean;DevFormel_Trace_Tests:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DevFormel_Trace:Make;DevFormel_Trace_Design:Make;DFTraceDemo:Make;DFTraceDemoFMX:Make;DevFormel_Trace_Tests:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

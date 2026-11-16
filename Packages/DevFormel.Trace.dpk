@@ -1,0 +1,53 @@
+// DevFormel Trace, https://devformel.com/trace/
+// Copyright (c) 2026 Dennis Powering.
+// SPDX-License-Identifier: MPL-2.0
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+package DevFormel.Trace;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl;
+
+contains
+  DevFormel.Trace.Types in '..\Source\DevFormel.Trace.Types.pas',
+  DevFormel.Trace.Engine in '..\Source\DevFormel.Trace.Engine.pas',
+  DevFormel.Trace.Sanitizer in '..\Source\DevFormel.Trace.Sanitizer.pas',
+  DevFormel.Trace.Hub in '..\Source\DevFormel.Trace.Hub.pas',
+  DevFormel.Trace.Sinks.LogFile in '..\Source\DevFormel.Trace.Sinks.LogFile.pas',
+  DevFormel.Trace.Sinks.Sentry in '..\Source\DevFormel.Trace.Sinks.Sentry.pas',
+  DevFormel.Trace.Sinks.Seq in '..\Source\DevFormel.Trace.Sinks.Seq.pas',
+  DevFormel.Trace.Sinks.WinEvent in '..\Source\DevFormel.Trace.Sinks.WinEvent.pas',
+  DevFormel.Trace.Sinks.Memo in '..\Source\DevFormel.Trace.Sinks.Memo.pas',
+  DevFormel.Trace.StackWalker in '..\Source\DevFormel.Trace.StackWalker.pas';
+
+end.

@@ -1,0 +1,12 @@
+* text=auto
+*.pas  text eol=crlf
+*.inc  text eol=crlf
+*.dpr  text eol=crlf
+*.dpk  text eol=crlf
+*.dproj text eol=crlf
+*.groupproj text eol=crlf
+*.dfm  text eol=crlf
+*.fmx  text eol=crlf
+*.res  binary
+*.ico  binary
+*.png  binary

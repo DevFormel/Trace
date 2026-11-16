@@ -1,0 +1,612 @@
+object FormMainFMX: TFormMainFMX
+  Left = 0
+  Top = 0
+  Caption = 'DevFormel Trace - FMX Telemetry Demo'
+  ClientHeight = 620
+  ClientWidth = 860
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object pnlHeader: TPanel
+    Align = Top
+    Size.Width = 860.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblProductTitle: TLabel
+      StyledSettings = [Family, Size, FontColor]
+      Position.X = 16.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 250.000000000000000000
+      Size.Height = 20.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 15.000000000000000000
+      Text = 'DevFormel Trace FMX Demo'
+    end
+    object btnWebsiteLink: TButton
+      Align = Right
+      Position.X = 690.000000000000000000
+      Size.Width = 170.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'www.devformel.com'
+      OnClick = btnVisitWebsiteClick
+    end
+  end
+  object pnlTop: TPanel
+    Align = Top
+    Position.Y = 40.000000000000000000
+    Size.Width = 860.000000000000000000
+    Size.Height = 140.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object grpGlobalActions: TGroupBox
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 844.000000000000000000
+      Size.Height = 124.000000000000000000
+      Size.PlatformDefault = False
+      Text = ' Global Telemetry Actions & Hub Config '
+      TabOrder = 0
+      object btnTrackInfo: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 28.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'Track Info'
+        OnClick = btnTrackInfoClick
+      end
+      object btnTrackWarning: TButton
+        Position.X = 144.000000000000000000
+        Position.Y = 28.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Text = 'Track Warning'
+        OnClick = btnTrackWarningClick
+      end
+      object btnTrackException: TButton
+        Position.X = 272.000000000000000000
+        Position.Y = 28.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        Text = 'Track Exception'
+        OnClick = btnTrackExceptionClick
+      end
+      object btnTrackSystemInfo: TButton
+        Position.X = 400.000000000000000000
+        Position.Y = 28.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        Text = 'Track System'
+        OnClick = btnTrackSystemInfoClick
+      end
+      object btnTrackPerformance: TButton
+        Position.X = 528.000000000000000000
+        Position.Y = 28.000000000000000000
+        Size.Width = 130.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        Text = 'Track Performance'
+        OnClick = btnTrackPerformanceClick
+      end
+      object chkHubEnabled: TCheckBox
+        Position.X = 672.000000000000000000
+        Position.Y = 28.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 20.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        Text = 'Hub Enabled'
+        OnChange = chkHubEnabledChange
+      end
+      object chkPIIScrubbing: TCheckBox
+        Position.X = 672.000000000000000000
+        Position.Y = 50.000000000000000000
+        Size.Width = 140.000000000000000000
+        Size.Height = 20.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 6
+        Text = 'PII Scrubbing'
+        OnChange = chkPIIScrubbingChange
+      end
+      object edtBreadcrumbText: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 7
+        Text = 'User opened FMX dialog'
+        Position.X = 16.000000000000000000
+        Position.Y = 72.000000000000000000
+        Size.Width = 248.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object btnAddBreadcrumb: TButton
+        Position.X = 272.000000000000000000
+        Position.Y = 70.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 26.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 8
+        Text = 'Add Breadcrumb'
+        OnClick = btnAddBreadcrumbClick
+      end
+      object btnRaiseUnhandled: TButton
+        Position.X = 400.000000000000000000
+        Position.Y = 70.000000000000000000
+        Size.Width = 130.000000000000000000
+        Size.Height = 26.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 9
+        Text = 'Raise Unhandled'
+        OnClick = btnRaiseUnhandledClick
+      end
+      object lblConsent: TLabel
+        Position.X = 614.000000000000000000
+        Position.Y = 74.000000000000000000
+        Size.Width = 56.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Consent:'
+      end
+      object cbxConsent: TComboBox
+        Position.X = 672.000000000000000000
+        Position.Y = 72.000000000000000000
+        Size.Width = 140.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 10
+        OnChange = cbxConsentChange
+      end
+    end
+  end
+  object tbcSinks: TTabControl
+    Align = Client
+    Size.Width = 860.000000000000000000
+    Size.Height = 440.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 1
+    TabOrder = 2
+    TabPosition = Top
+    Sizes = (
+      860s
+      414s
+      860s
+      414s
+      860s
+      414s
+      860s
+      414s
+      860s
+      414s)
+    object tiMemo: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 95.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'UI Memo Sink'
+      ExplicitSize.cx = 50.000000000000000000
+      ExplicitSize.cy = 50.000000000000000000
+      object pnlMemoHeader: TPanel
+        Align = Top
+        Size.Width = 860.000000000000000000
+        Size.Height = 36.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblMemoInfo: TLabel
+          Align = Client
+          StyledSettings = [Family, Size, FontColor]
+          Size.Width = 860.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.StyleExt = {00040000000200000004000000}
+          Text = 
+            'Thread-safe FMX Memo logging. Uses TThread.Queue for UI main thr' +
+            'ead sync.'
+        end
+      end
+      object pnlMemoConfig: TPanel
+        Align = Top
+        Position.Y = 36.000000000000000000
+        Size.Width = 860.000000000000000000
+        Size.Height = 45.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object lblMemoMaxLines: TLabel
+          Position.X = 240.000000000000000000
+          Position.Y = 14.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Max Lines:'
+        end
+        object chkMemoEnabled: TCheckBox
+          Position.X = 16.000000000000000000
+          Position.Y = 13.000000000000000000
+          Size.Width = 100.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = 'Sink Enabled'
+          OnChange = chkMemoEnabledChange
+        end
+        object chkMemoAutoScroll: TCheckBox
+          Position.X = 120.000000000000000000
+          Position.Y = 13.000000000000000000
+          Size.Width = 100.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Text = 'Auto Scroll'
+          OnChange = chkMemoAutoScrollChange
+        end
+        object edtMemoMaxLines: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 2
+          Text = '500'
+          Position.X = 305.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtMemoMaxLinesChange
+        end
+        object btnMemoClear: TButton
+          Position.X = 385.000000000000000000
+          Position.Y = 10.000000000000000000
+          Size.Width = 90.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 3
+          Text = 'Clear Output'
+          OnClick = btnMemoClearClick
+        end
+      end
+      object mmoLogOutput: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Client
+        Size.Width = 860.000000000000000000
+        Size.Height = 333.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        Viewport.Width = 856.000000000000000000
+        Viewport.Height = 329.000000000000000000
+      end
+    end
+    object tiLogFile: TTabItem
+      CustomIcon = <
+        item
+        end>
+      StyledSettings = [Family, Size, FontColor]
+      IsSelected = True
+      Size.Width = 86.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Log File Sink'
+      ExplicitSize.cx = 50.000000000000000000
+      ExplicitSize.cy = 50.000000000000000000
+      object pnlFileHeader: TPanel
+        Align = Top
+        Size.Width = 860.000000000000000000
+        Size.Height = 36.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblFileInfo: TLabel
+          Align = Client
+          StyledSettings = [Family, Size, FontColor]
+          Size.Width = 860.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.StyleExt = {00040000000200000004000000}
+          Text = 
+            'Cross-platform file logger with automatic size rotation and arch' +
+            'ive retention.'
+        end
+      end
+      object pnlFileConfig: TPanel
+        Align = Client
+        Size.Width = 860.000000000000000000
+        Size.Height = 378.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object lblFileName: TLabel
+          Position.X = 16.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 100.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Target File Path:'
+        end
+        object lblMaxFileSize: TLabel
+          Position.X = 16.000000000000000000
+          Position.Y = 95.000000000000000000
+          Size.Width = 110.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Max File Size (MB):'
+        end
+        object chkFileEnabled: TCheckBox
+          Position.X = 16.000000000000000000
+          Position.Y = 16.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = 'Sink Enabled'
+          OnChange = chkFileEnabledChange
+        end
+        object edtFileName: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 1
+          Position.X = 130.000000000000000000
+          Position.Y = 47.000000000000000000
+          Size.Width = 350.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtFileNameChange
+        end
+        object edtMaxFileSize: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 2
+          Text = '5'
+          Position.X = 130.000000000000000000
+          Position.Y = 92.000000000000000000
+          Size.Width = 80.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtMaxFileSizeChange
+        end
+        object btnOpenLogDir: TButton
+          Position.X = 16.000000000000000000
+          Position.Y = 140.000000000000000000
+          Size.Width = 160.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 3
+          Text = 'Open Log Directory'
+          OnClick = btnOpenLogDirClick
+        end
+      end
+    end
+    object tiSeq: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 118.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Seq Ingestion Sink'
+      ExplicitSize.cx = 50.000000000000000000
+      ExplicitSize.cy = 50.000000000000000000
+      object pnlSeqHeader: TPanel
+        Align = Top
+        Size.Width = 860.000000000000000000
+        Size.Height = 36.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblSeqInfo: TLabel
+          Align = Client
+          StyledSettings = [Family, Size, FontColor]
+          Size.Width = 860.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.StyleExt = {00040000000200000004000000}
+          Text = 
+            'Emits CLEF structured logs via HTTP/HTTPS directly to Datalust S' +
+            'eq.'
+        end
+      end
+      object pnlSeqConfig: TPanel
+        Align = Client
+        Size.Width = 860.000000000000000000
+        Size.Height = 378.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object lblSeqServerUrl: TLabel
+          Position.X = 16.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 100.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Seq Server URL:'
+        end
+        object lblSeqApiKey: TLabel
+          Position.X = 16.000000000000000000
+          Position.Y = 95.000000000000000000
+          Size.Width = 60.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'API Key:'
+        end
+        object chkSeqEnabled: TCheckBox
+          Position.X = 16.000000000000000000
+          Position.Y = 16.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = 'Sink Enabled'
+          OnChange = chkSeqEnabledChange
+        end
+        object edtSeqServerUrl: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 1
+          Text = 'http://localhost:5341'
+          Position.X = 120.000000000000000000
+          Position.Y = 47.000000000000000000
+          Size.Width = 350.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtSeqServerUrlChange
+        end
+        object edtSeqApiKey: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 2
+          Position.X = 120.000000000000000000
+          Position.Y = 92.000000000000000000
+          Size.Width = 350.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtSeqApiKeyChange
+        end
+      end
+    end
+    object tiSentry: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 79.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Sentry Sink'
+      ExplicitSize.cx = 50.000000000000000000
+      ExplicitSize.cy = 50.000000000000000000
+      object pnlSentryHeader: TPanel
+        Align = Top
+        Size.Width = 860.000000000000000000
+        Size.Height = 36.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblSentryInfo: TLabel
+          Align = Client
+          StyledSettings = [Family, Size, FontColor]
+          Size.Width = 860.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.StyleExt = {00040000000200000004000000}
+          Text = 
+            'Transmits exceptions, breadcrumbs, and stacktraces using Sentry ' +
+            'Envelope protocol.'
+        end
+      end
+      object pnlSentryConfig: TPanel
+        Align = Client
+        Size.Width = 860.000000000000000000
+        Size.Height = 378.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object lblSentryDSN: TLabel
+          Position.X = 16.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 80.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Sentry DSN:'
+        end
+        object chkSentryEnabled: TCheckBox
+          Position.X = 16.000000000000000000
+          Position.Y = 16.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = 'Sink Enabled'
+          OnChange = chkSentryEnabledChange
+        end
+        object edtSentryDSN: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 1
+          Position.X = 100.000000000000000000
+          Position.Y = 47.000000000000000000
+          Size.Width = 450.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtSentryDSNChange
+        end
+      end
+    end
+    object tiWinEvent: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 126.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Windows Event Sink'
+      ExplicitSize.cx = 50.000000000000000000
+      ExplicitSize.cy = 50.000000000000000000
+      object pnlWinEventHeader: TPanel
+        Align = Top
+        Size.Width = 860.000000000000000000
+        Size.Height = 36.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblWinEventInfo: TLabel
+          Align = Client
+          StyledSettings = [Family, Size, FontColor]
+          Size.Width = 860.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.StyleExt = {00040000000200000004000000}
+          Text = 
+            'Native WinAPI ReportEvent integration. Degrades gracefully to no' +
+            '-op on macOS/Mobile.'
+        end
+      end
+      object pnlWinEventConfig: TPanel
+        Align = Client
+        Size.Width = 860.000000000000000000
+        Size.Height = 378.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object lblWinEventSource: TLabel
+          Position.X = 16.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 90.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Event Source:'
+        end
+        object chkWinEventEnabled: TCheckBox
+          Position.X = 16.000000000000000000
+          Position.Y = 16.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = 'Sink Enabled'
+          OnChange = chkWinEventEnabledChange
+        end
+        object edtWinEventSource: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 1
+          Text = 'DevFormelTraceFMXDemo'
+          Position.X = 110.000000000000000000
+          Position.Y = 47.000000000000000000
+          Size.Width = 250.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = edtWinEventSourceChange
+        end
+      end
+    end
+  end
+end
