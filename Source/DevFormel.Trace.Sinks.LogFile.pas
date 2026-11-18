@@ -82,6 +82,11 @@ type
     /// <summary>Passes the queued events to all sinks, for at most Hub.ShutdownTimeoutMS, and
     /// removes the sink from the hub.</summary>
     destructor Destroy; override;
+    /// <summary>Path of the file the sink writes to: FileName if set, otherwise the default
+    /// path described at FileName.</summary>
+    /// <remarks>Useful to show the log file or open its folder from the application. The
+    /// file and its folder exist only after the first event has been written.</remarks>
+    property ActiveFileName: string read ResolveFilePath;
   published
     /// <summary>Hub that passes events to this sink. Setting it registers the sink with the
     /// hub.</summary>

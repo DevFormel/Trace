@@ -169,8 +169,8 @@ begin
   cbxConsent.Items.Add('Full');
   InitializeTelemetryPipeline;
   SynchronizeUI;
-  // Empty FileName: the sink uses its default folder, as described in the documentation
-  edtFileName.TextPrompt := '%LOCALAPPDATA%\' + TPath.GetFileNameWithoutExtension(ParamStr(0)) + '\Logs\trace.log';
+  // FileName stays empty, so the sink uses its default path; shown as a hint in the field
+  edtFileName.TextPrompt := FFileSink.ActiveFileName;
 end;
 
 procedure TFormMainFMX.FormDestroy(Sender: TObject);
@@ -368,12 +368,7 @@ procedure TFormMainFMX.btnOpenLogDirClick(Sender: TObject);
 var
   LDir: string;
 begin
-  if Trim(edtFileName.Text) = '' then
-    // Same folder the file sink uses when FileName is empty
-    LDir := TPath.Combine(TPath.Combine(TPath.GetCachePath,
-      TPath.GetFileNameWithoutExtension(ParamStr(0))), 'Logs')
-  else
-    LDir := TPath.GetDirectoryName(Trim(edtFileName.Text));
+  LDir := TPath.GetDirectoryName(FFileSink.ActiveFileName);
   if TDirectory.Exists(LDir) then
     OpenURL(LDir)
   else

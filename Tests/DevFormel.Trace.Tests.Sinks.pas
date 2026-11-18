@@ -83,12 +83,19 @@ type
 
     [Test]
     procedure FormatEvent_ControlCharacter_IsEscaped;
+
+    [Test]
+    procedure ActiveFileName_WithoutFileName_IsDefaultPath;
+
+    [Test]
+    procedure ActiveFileName_WithFileName_IsFileName;
   end;
 
 implementation
 
 uses
   System.SysUtils,
+  System.IOUtils,
   System.JSON,
   DevFormel.Trace.Types,
   DevFormel.Trace.Sinks.LogFile,
@@ -317,6 +324,32 @@ begin
   Text := FormatWithFileSink(TDFTraceEvent.Create(TDFLogLevel.Info, 'a' + #27 + '[31mb' + #9 + 'c'));
 
   Assert.IsTrue(Text.Contains('a\u001B[31mb' + #9 + 'c'), Text);
+end;
+
+procedure TFileSinkTests.ActiveFileName_WithoutFileName_IsDefaultPath;
+var
+  Sink: TDFFileSink;
+begin
+  Sink := TDFFileSink.Create(nil);
+  try
+    Assert.AreEqual(TPath.Combine(TPath.GetCachePath,
+      TPath.GetFileNameWithoutExtension(ParamStr(0)) + '\Logs\trace.log'), Sink.ActiveFileName);
+  finally
+    Sink.Free;
+  end;
+end;
+
+procedure TFileSinkTests.ActiveFileName_WithFileName_IsFileName;
+var
+  Sink: TDFFileSink;
+begin
+  Sink := TDFFileSink.Create(nil);
+  try
+    Sink.FileName := 'C:\Logs\app.log';
+    Assert.AreEqual('C:\Logs\app.log', Sink.ActiveFileName);
+  finally
+    Sink.Free;
+  end;
 end;
 
 initialization
