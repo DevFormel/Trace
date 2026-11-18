@@ -169,7 +169,8 @@ begin
   InitializeTelemetryPipeline;
   SynchronizeUI;
 
-  edtFileName.Text := TPath.GetTempPath + 'DFTraceDemo\logfile.txt';
+  // Empty FileName: the sink uses its default folder, as described in the documentation
+  edtFileName.TextHint := '%LOCALAPPDATA%\' + TPath.GetFileNameWithoutExtension(ParamStr(0)) + '\Logs\trace.log';
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -371,7 +372,12 @@ procedure TFormMain.btnOpenLogDirClick(Sender: TObject);
 var
   LDir: string;
 begin
-  LDir := TPath.GetDirectoryName(Trim(edtFileName.Text));
+  if Trim(edtFileName.Text) = '' then
+    // Same folder the file sink uses when FileName is empty
+    LDir := TPath.Combine(TPath.Combine(TPath.GetCachePath,
+      TPath.GetFileNameWithoutExtension(ParamStr(0))), 'Logs')
+  else
+    LDir := TPath.GetDirectoryName(Trim(edtFileName.Text));
   if TDirectory.Exists(LDir) then
     ShellExecute(0, 'open', PChar(LDir), nil, nil, SW_SHOWNORMAL)
   else
