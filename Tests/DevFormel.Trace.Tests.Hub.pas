@@ -90,6 +90,17 @@ type
 
     [Test]
     procedure AddBreadcrumb_LongMessage_IsCut;
+
+    [Test]
+    procedure TrackEvent_FromSeveralThreads_ArrivesOnceAndInOrder;
+
+    // A sink may only be freed after UnregisterSink; that is safe only if UnregisterSink
+    // waits for an Emit that is still running
+    [Test]
+    procedure UnregisterSink_WhileSinkIsEmitting_WaitsForEmit;
+
+    [Test]
+    procedure Flush_WhileSinkIsEmitting_ReturnsFalseUntilEmitReturns;
   end;
 
   // Keeps events in memory. Emit runs in the worker thread; tests read after Flush.
@@ -110,7 +121,9 @@ implementation
 
 uses
   System.SysUtils,
-  System.StrUtils;
+  System.StrUtils,
+  System.Classes,
+  System.SyncObjs;
 
 // In 64-bit programs Length of a dynamic array is NativeInt, and Assert.AreEqual cannot
 // compare it with an Integer literal; hence Integer(Length(...)) in the assertions.
@@ -120,6 +133,37 @@ const
   MaxTextLength = 8000;
   MaxBreadcrumbLength = 1000;
   TruncatedMark = ' [truncated]';
+
+type
+  // Holds the worker thread in Emit until the test releases it. IDFTraceSink is listed
+  // again so that the interface uses this Emit instead of the inherited one.
+  TBlockingSink = class(TCollectingSink, IDFTraceSink)
+  private
+    FEntered: TEvent;
+    FReleased: TEvent;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Emit(const AEvent: TDFTraceEvent);
+    function WaitUntilEntered(ATimeoutMS: Cardinal): Boolean;
+    procedure Release;
+  end;
+
+// A function of its own, so that each thread captures its own thread number and not the
+// loop variable of the caller
+function StartSender(AHub: TDFTraceHub; AThreadNo, ACount: Integer): TThread;
+begin
+  Result := TThread.CreateAnonymousThread(
+    procedure
+    var
+      I: Integer;
+    begin
+      for I := 1 to ACount do
+        AHub.TrackEvent(Format('%d/%d', [AThreadNo, I]));
+    end);
+  Result.FreeOnTerminate := False;
+  Result.Start;
+end;
 
 { TCollectingSink }
 
@@ -151,6 +195,40 @@ begin
   finally
     TMonitor.Exit(Self);
   end;
+end;
+
+{ TBlockingSink }
+
+constructor TBlockingSink.Create;
+begin
+  inherited Create;
+  FEntered := TEvent.Create(nil, True, False, '');
+  FReleased := TEvent.Create(nil, True, False, '');
+end;
+
+destructor TBlockingSink.Destroy;
+begin
+  FReleased.Free;
+  FEntered.Free;
+  inherited Destroy;
+end;
+
+procedure TBlockingSink.Emit(const AEvent: TDFTraceEvent);
+begin
+  FEntered.SetEvent;
+  // The timeout only keeps a broken test from hanging the whole test run
+  FReleased.WaitFor(10000);
+  inherited Emit(AEvent);
+end;
+
+function TBlockingSink.WaitUntilEntered(ATimeoutMS: Cardinal): Boolean;
+begin
+  Result := FEntered.WaitFor(ATimeoutMS) = wrSignaled;
+end;
+
+procedure TBlockingSink.Release;
+begin
+  FReleased.SetEvent;
 end;
 
 { THubTests }
@@ -473,6 +551,108 @@ begin
   Assert.AreEqual(1, Integer(Length(Received)));
   Assert.AreEqual(1, Integer(Length(Received[0].Breadcrumbs)));
   Assert.AreEqual(StringOfChar('x', MaxBreadcrumbLength) + TruncatedMark, Received[0].Breadcrumbs[0].Message);
+end;
+
+procedure THubTests.TrackEvent_FromSeveralThreads_ArrivesOnceAndInOrder;
+const
+  ThreadCount = 4;
+  EventsPerThread = 500;
+var
+  Senders: array[0..ThreadCount - 1] of TThread;
+  LastSeen: array[0..ThreadCount - 1] of Integer;
+  Received: TArray<TDFTraceEvent>;
+  Event: TDFTraceEvent;
+  Parts: TArray<string>;
+  I, ThreadNo, EventNo: Integer;
+begin
+  for I := 0 to ThreadCount - 1 do
+    Senders[I] := StartSender(FHub, I, EventsPerThread);
+  for I := 0 to ThreadCount - 1 do
+  begin
+    Senders[I].WaitFor;
+    Senders[I].Free;
+  end;
+
+  Received := ReceivedEvents;
+  Assert.AreEqual(ThreadCount * EventsPerThread, Integer(Length(Received)));
+  Assert.IsTrue(FHub.DroppedCount = 0, 'Events were dropped');
+
+  // Each sender queues its events one after another, so they must arrive in that order.
+  // Together with the count this also rules out lost and duplicated events.
+  for I := 0 to ThreadCount - 1 do
+    LastSeen[I] := 0;
+  for Event in Received do
+  begin
+    Parts := Event.Message.Split(['/']);
+    ThreadNo := StrToInt(Parts[0]);
+    EventNo := StrToInt(Parts[1]);
+    Assert.AreEqual(LastSeen[ThreadNo] + 1, EventNo, Format('Thread %d', [ThreadNo]));
+    LastSeen[ThreadNo] := EventNo;
+  end;
+end;
+
+procedure THubTests.UnregisterSink_WhileSinkIsEmitting_WaitsForEmit;
+var
+  Blocking: TBlockingSink;
+  BlockingSink: IDFTraceSink;
+  Unregistered: TEvent;
+  Unregisterer: TThread;
+begin
+  Blocking := TBlockingSink.Create;
+  BlockingSink := Blocking;
+  FHub.RegisterSink(BlockingSink);
+  Unregistered := TEvent.Create(nil, True, False, '');
+  Unregisterer := nil;
+  try
+    FHub.TrackEvent('Blocked');
+    Assert.IsTrue(Blocking.WaitUntilEntered(5000), 'Emit was not called');
+
+    Unregisterer := TThread.CreateAnonymousThread(
+      procedure
+      begin
+        FHub.UnregisterSink(BlockingSink);
+        Unregistered.SetEvent;
+      end);
+    Unregisterer.FreeOnTerminate := False;
+    Unregisterer.Start;
+
+    Assert.IsTrue(Unregistered.WaitFor(200) = wrTimeout,
+      'UnregisterSink returned while Emit was still running');
+    Blocking.Release;
+    Assert.IsTrue(Unregistered.WaitFor(5000) = wrSignaled,
+      'UnregisterSink did not return after Emit');
+  finally
+    Blocking.Release;
+    if Assigned(Unregisterer) then
+    begin
+      Unregisterer.WaitFor;
+      Unregisterer.Free;
+    end
+    else
+      FHub.UnregisterSink(BlockingSink);
+    Unregistered.Free;
+  end;
+end;
+
+procedure THubTests.Flush_WhileSinkIsEmitting_ReturnsFalseUntilEmitReturns;
+var
+  Blocking: TBlockingSink;
+  BlockingSink: IDFTraceSink;
+begin
+  Blocking := TBlockingSink.Create;
+  BlockingSink := Blocking;
+  FHub.RegisterSink(BlockingSink);
+  try
+    FHub.TrackEvent('Blocked');
+    Assert.IsTrue(Blocking.WaitUntilEntered(5000), 'Emit was not called');
+
+    Assert.IsFalse(FHub.Flush(50), 'Flush reported success while Emit was still running');
+    Blocking.Release;
+    Assert.IsTrue(FHub.Flush(5000), 'Flush did not succeed after Emit returned');
+  finally
+    Blocking.Release;
+    FHub.UnregisterSink(BlockingSink);
+  end;
 end;
 
 initialization
