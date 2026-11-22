@@ -325,7 +325,7 @@ end;
 
 procedure TFormMainFMX.btnVisitWebsiteClick(Sender: TObject);
 begin
-  OpenURL('https://www.devformel.com/');
+  OpenURL('https://devformel.com/');
 end;
 
 procedure TFormMainFMX.chkMemoEnabledChange(Sender: TObject);

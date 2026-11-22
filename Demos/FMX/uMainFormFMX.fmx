@@ -33,7 +33,7 @@ object FormMainFMX: TFormMainFMX
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      Text = 'www.devformel.com'
+      Text = 'devformel.com'
       OnClick = btnVisitWebsiteClick
     end
   end

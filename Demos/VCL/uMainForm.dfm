@@ -43,15 +43,15 @@ object FormMain: TFormMain
       ParentFont = False
     end
     object lblWebsiteLink: TLinkLabel
-      Left = 528
+      Left = 567
       Top = 9
-      Width = 298
+      Width = 259
       Height = 25
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       Caption = 
-        '<a href="https://www.devformel.com">www.devformel.com</a> | <a h' +
-        'ref="https://docs.devformel.com">docs.devformel.com</a>'
+        '<a href="https://devformel.com">devformel.com</a> | <a href="htt' +
+        'ps://docs.devformel.com">docs.devformel.com</a>'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clHighlight
       Font.Height = -16
@@ -60,7 +60,6 @@ object FormMain: TFormMain
       ParentFont = False
       TabOrder = 0
       OnLinkClick = lblWebsiteLinkLinkClick
-      ExplicitLeft = 526
     end
   end
   object pnlTop: TPanel
@@ -79,6 +78,13 @@ object FormMain: TFormMain
       Height = 124
       Caption = ' Global Telemetry Actions && Hub Config '
       TabOrder = 0
+      object lblConsent: TLabel
+        Left = 614
+        Top = 76
+        Width = 47
+        Height = 15
+        Caption = 'Consent:'
+      end
       object btnTrackInfo: TButton
         Left = 16
         Top = 28
@@ -167,13 +173,6 @@ object FormMain: TFormMain
         Caption = 'Raise Unhandled'
         TabOrder = 9
         OnClick = btnRaiseUnhandledClick
-      end
-      object lblConsent: TLabel
-        Left = 614
-        Top = 76
-        Width = 49
-        Height = 15
-        Caption = 'Consent:'
       end
       object cbxConsent: TComboBox
         Left = 672
@@ -318,8 +317,8 @@ object FormMain: TFormMain
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 676
-          Height = 15
+          Width = 836
+          Height = 30
           Align = alClient
           Caption = 
             'High-performance local file logger. Supports size-based log file' +
@@ -332,6 +331,8 @@ object FormMain: TFormMain
           Font.Style = [fsItalic]
           ParentFont = False
           WordWrap = True
+          ExplicitWidth = 676
+          ExplicitHeight = 15
         end
       end
       object pnlFileConfig: TPanel
@@ -418,8 +419,8 @@ object FormMain: TFormMain
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 692
-          Height = 15
+          Width = 836
+          Height = 30
           Align = alClient
           Caption = 
             'Structured logging sink emitting CLEF (Compact Log Event Format)' +
@@ -431,6 +432,8 @@ object FormMain: TFormMain
           Font.Style = [fsItalic]
           ParentFont = False
           WordWrap = True
+          ExplicitWidth = 692
+          ExplicitHeight = 15
         end
       end
       object pnlSeqConfig: TPanel
@@ -499,8 +502,8 @@ object FormMain: TFormMain
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 699
-          Height = 15
+          Width = 836
+          Height = 30
           Align = alClient
           Caption = 
             'Error-tracking sink transmitting application exceptions, stack t' +
@@ -513,6 +516,8 @@ object FormMain: TFormMain
           Font.Style = [fsItalic]
           ParentFont = False
           WordWrap = True
+          ExplicitWidth = 699
+          ExplicitHeight = 15
         end
       end
       object pnlSentryConfig: TPanel
@@ -566,8 +571,8 @@ object FormMain: TFormMain
           AlignWithMargins = True
           Left = 3
           Top = 3
-          Width = 642
-          Height = 15
+          Width = 836
+          Height = 30
           Align = alClient
           Caption = 
             'Native Windows Event Log integration utilizing WinAPI ReportEven' +
@@ -579,6 +584,8 @@ object FormMain: TFormMain
           Font.Style = [fsItalic]
           ParentFont = False
           WordWrap = True
+          ExplicitWidth = 642
+          ExplicitHeight = 15
         end
       end
       object pnlWinEventConfig: TPanel
