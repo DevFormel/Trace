@@ -56,6 +56,22 @@ For unit names and line numbers in stack traces, set the linker option "Map file
 to "Detailed" and ship the `.map` file next to the executable. The map file shows
 the names of your units and methods to anyone who has it.
 
+## Known issues
+
+- In 32-bit programs, stack traces can be incomplete. The caller of an RTL
+  routine such as `StrToInt` can be missing, and the stack trace of a hardware
+  exception can end with the line where it occurred.
+- The Windows event log rejects entries longer than 31,839 characters. Such an
+  event is missing from the event log without notice. Long stack traces and many
+  breadcrumbs make this more likely.
+- A scope returned by `TrackScope` that lives longer than its hub accesses freed
+  memory. Release all scopes before the hub.
+- Sentry accepts tag values up to 200 characters, Trace passes on up to 8,000.
+  What Sentry does with longer values has not been tested.
+- The map file is loaded when the first stack trace is created, in the thread
+  that asks for it. That first stack trace takes longer.
+- A second instance of the program cannot write to the same log file.
+
 ## Documentation
 
 https://docs.devformel.com
