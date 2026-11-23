@@ -89,12 +89,23 @@ type
 
     [Test]
     procedure ActiveFileName_WithFileName_IsFileName;
+
+    [Test]
+    procedure Rotation_KeepsMaxArchivedFiles;
+
+    [Test]
+    procedure Rotation_NoArchives_StartsOver;
+
+    // A file that another program keeps open cannot be renamed; that must not cost archives
+    [Test]
+    procedure Rotation_FileKeptOpenByOtherProgram_KeepsArchives;
   end;
 
 implementation
 
 uses
   System.SysUtils,
+  System.Classes,
   System.IOUtils,
   System.JSON,
   DevFormel.Trace.Types,
@@ -121,6 +132,43 @@ begin
   finally
     Sink.Free;
   end;
+end;
+
+const
+  // Two of these events exceed 1 MB, the smallest size MaxFileSizeMB allows
+  LargeEventSize = 600 * 1024;
+
+// A path in a new folder below the temp folder, so that files of earlier runs do not count
+function NewTempLogFile: string;
+begin
+  Result := TPath.Combine(TPath.Combine(TPath.GetTempPath,
+    'DFTraceTests-' + TGUID.NewGuid.ToString), 'trace.log');
+end;
+
+function CreateRotatingSink(const AFileName: string; AMaxArchivedFiles: Integer): TDFFileSink;
+begin
+  Result := TDFFileSink.Create(nil);
+  Result.FileName := AFileName;
+  Result.MaxFileSizeMB := 1;
+  Result.MaxArchivedFiles := AMaxArchivedFiles;
+end;
+
+function FileSizeOf(const AFileName: string): Int64;
+var
+  Stream: TFileStream;
+begin
+  Stream := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyNone);
+  try
+    Result := Stream.Size;
+  finally
+    Stream.Free;
+  end;
+end;
+
+// Emit is reached through the interface; the sink writes without a hub
+procedure EmitText(const ASink: IDFTraceSink; ALength: Integer);
+begin
+  ASink.Emit(TDFTraceEvent.Create(TDFLogLevel.Info, StringOfChar('x', ALength)));
 end;
 
 // Number of lines that start at the first column like an entry does
@@ -349,6 +397,99 @@ begin
     Assert.AreEqual('C:\Logs\app.log', Sink.ActiveFileName);
   finally
     Sink.Free;
+  end;
+end;
+
+procedure TFileSinkTests.Rotation_KeepsMaxArchivedFiles;
+var
+  LogFile: string;
+  Sink: TDFFileSink;
+  SinkIntf: IDFTraceSink;
+  I: Integer;
+begin
+  LogFile := NewTempLogFile;
+  Sink := CreateRotatingSink(LogFile, 2);
+  try
+    SinkIntf := Sink;
+    // Rotations at the 3rd, 5th and 7th event; the third one drops the oldest archive
+    for I := 1 to 7 do
+      EmitText(SinkIntf, LargeEventSize);
+    SinkIntf := nil;
+  finally
+    Sink.Free;
+  end;
+
+  try
+    Assert.IsTrue(TFile.Exists(LogFile), 'trace.log');
+    Assert.IsTrue(TFile.Exists(LogFile + '.1'), 'trace.log.1');
+    Assert.IsTrue(TFile.Exists(LogFile + '.2'), 'trace.log.2');
+    Assert.IsFalse(TFile.Exists(LogFile + '.3'), 'trace.log.3');
+  finally
+    TDirectory.Delete(TPath.GetDirectoryName(LogFile), True);
+  end;
+end;
+
+procedure TFileSinkTests.Rotation_NoArchives_StartsOver;
+var
+  LogFile: string;
+  Sink: TDFFileSink;
+  SinkIntf: IDFTraceSink;
+  I: Integer;
+begin
+  LogFile := NewTempLogFile;
+  Sink := CreateRotatingSink(LogFile, 0);
+  try
+    SinkIntf := Sink;
+    for I := 1 to 3 do
+      EmitText(SinkIntf, LargeEventSize);
+    SinkIntf := nil;
+  finally
+    Sink.Free;
+  end;
+
+  try
+    Assert.IsFalse(TFile.Exists(LogFile + '.1'), 'trace.log.1');
+    Assert.IsTrue(FileSizeOf(LogFile) < 1024 * 1024, 'The file did not start over');
+  finally
+    TDirectory.Delete(TPath.GetDirectoryName(LogFile), True);
+  end;
+end;
+
+procedure TFileSinkTests.Rotation_FileKeptOpenByOtherProgram_KeepsArchives;
+var
+  LogFile: string;
+  Sink: TDFFileSink;
+  SinkIntf: IDFTraceSink;
+  Reader: TFileStream;
+  I: Integer;
+begin
+  LogFile := NewTempLogFile;
+  Sink := CreateRotatingSink(LogFile, 2);
+  try
+    SinkIntf := Sink;
+    // Afterwards: trace.log above 1 MB, trace.log.1 and trace.log.2
+    for I := 1 to 6 do
+      EmitText(SinkIntf, LargeEventSize);
+
+    // Reading and writing allowed, renaming not, as with many log viewers
+    Reader := TFileStream.Create(LogFile, fmOpenRead or fmShareDenyNone);
+    try
+      // The first event tries to rotate and fails; the following ones must not try again
+      for I := 1 to 3 do
+        EmitText(SinkIntf, 100);
+    finally
+      Reader.Free;
+    end;
+    SinkIntf := nil;
+  finally
+    Sink.Free;
+  end;
+
+  try
+    Assert.IsTrue(TFile.Exists(LogFile + '.2'),
+      'Events that could not rotate deleted further archives');
+  finally
+    TDirectory.Delete(TPath.GetDirectoryName(LogFile), True);
   end;
 end;
 

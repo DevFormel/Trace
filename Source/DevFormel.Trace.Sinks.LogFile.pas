@@ -53,6 +53,7 @@ type
     FStream: TFileStream;
     FStreamPath: string;
     FStreamSize: Int64;
+    FRetryRotationAt: Int64;
 
     procedure SetHub(const AValue: TDFTraceHub);
     function ResolveFilePath: string;
@@ -103,9 +104,14 @@ type
     property FileName: string read FFileName write FFileName;
     /// <summary>Size in megabytes at which a new file is started; MaxArchivedFiles decides how
     /// many old files are kept. 0: the file grows without limit.</summary>
+    /// <remarks>If the file or an archive cannot be renamed or deleted, for example because
+    /// another program keeps it open without allowing that, the sink keeps writing to the file
+    /// and tries again after another MaxFileSizeMB.</remarks>
     property MaxFileSizeMB: Integer read FMaxFileSizeMB write FMaxFileSizeMB default 10;
     /// <summary>Number of rotated files kept (trace.log.1 to trace.log.N). 0 keeps none: the log
     /// starts over when it reaches MaxFileSizeMB.</summary>
+    /// <remarks>Lowering the value does not delete archives with higher numbers that already
+    /// exist.</remarks>
     property MaxArchivedFiles: Integer read FMaxArchivedFiles write FMaxArchivedFiles default 5;
     /// <summary>Appends the offset to UTC (for example +02:00) to each local timestamp.</summary>
     /// <remarks>Without the offset, entries written in the hour that repeats when daylight
@@ -404,6 +410,7 @@ begin
   FreeAndNil(FStream);
   FStreamPath := '';
   FStreamSize := 0;
+  FRetryRotationAt := 0;
 end;
 
 procedure TDFFileSink.RotateLogs(const AFilePath: string);
@@ -468,11 +475,17 @@ begin
         OpenStream(FilePath);
 
       MaxBytes := Int64(FMaxFileSizeMB) * 1024 * 1024;
-      if (MaxBytes > 0) and (FStreamSize >= MaxBytes) then
+      if (MaxBytes > 0) and (FStreamSize >= MaxBytes) and (FStreamSize >= FRetryRotationAt) then
       begin
         CloseStream;
         RotateLogs(FilePath);
         OpenStream(FilePath);
+        // The file could not be moved or deleted, for example because another program keeps
+        // it open without allowing that. Each attempt deletes the oldest archive, so trying
+        // with every event would delete them all; the next attempt waits until the file has
+        // grown by another MaxFileSizeMB, as between normal rotations.
+        if FStreamSize >= MaxBytes then
+          FRetryRotationAt := FStreamSize + MaxBytes;
       end;
 
       Bytes := TEncoding.UTF8.GetBytes(FormatEvent(AEvent));
