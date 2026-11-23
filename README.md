@@ -1,5 +1,7 @@
 # DevFormel Trace
 
+Trace is in beta. The API can still change before version 1.0.0.
+
 Logging and error reporting for Delphi applications, VCL and FMX.
 
 Your application passes events, exceptions and breadcrumbs to a hub. A background

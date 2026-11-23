@@ -149,7 +149,7 @@ implementation
 const
   // Reported to Sentry in the event and in the X-Sentry-Auth header
   SdkName = 'devformel.trace';
-  SdkVersion = '1.0.0';
+  SdkVersion = '1.0.0-beta.1';
 
 { TDFSentrySink }
 
